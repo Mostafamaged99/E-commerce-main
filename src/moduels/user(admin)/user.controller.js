@@ -27,14 +27,22 @@ const allUsers = catchError(async (req, res, next) => {
   // get data
   let users = await apiFeatures.mongooseQuery;
   // send response
-  if (!users.length) {
-    return next(new AppError(messages.user.notFound, 404));
-  }
-  return res.json({
-    message: messages.user.successGet,
-    page: apiFeatures.pageNumber,
-    data: users,
-  });
+  // if (!users.length) {
+  //   return next(new AppError(messages.user.notFound, 404));
+  // }
+  // return res.json({
+  //   message: messages.user.successGet,
+  //   page: apiFeatures.pageNumber,
+  //   data: users,
+  // });
+
+  users || next(new AppError(messages.user.notFound, 404));
+  !users ||
+    res.json({
+      message: messages.user.successGet,
+      page: apiFeatures.pageNumber,
+      data: users,
+    });
 });
 
 const getUser = catchError(async (req, res, next) => {
