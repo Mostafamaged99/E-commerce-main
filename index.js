@@ -7,6 +7,8 @@ import { bootstrap } from "./src/moduels/bootstrap.js";
 import { AppError } from "./src/utlities/appError.js";
 import { globalErrorHandler } from "./src/middleware/globalErrorHandler.js";
 import "dotenv/config";
+import cors from "cors";
+
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(cors());

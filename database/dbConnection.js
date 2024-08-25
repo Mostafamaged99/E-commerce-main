@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 
 export const dbConnection = Mongoose.connect(
-  "mongodb+srv://E-commerce:ycdtWbA4cDyDzh6V@cluster0.ydjbez3.mongodb.net/e-ecommercec42"
+  "mongodb+srv://admin:SOmg9KzSzbA5VT4z@cluster0.6hxjrrc.mongodb.net/e-commerce"
 )
   .then(() => {
     console.log("database connected successfully");
