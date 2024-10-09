@@ -8,7 +8,7 @@ export class ApiFeatures {
     if (this.searchQuery.page < 1) {
       pageNumber = 1;
     }
-    const limit = 2;
+    const limit = 10;
     let skip = (parseInt(pageNumber) - 1) * limit;
     this.pageNumber = pageNumber;
     this.mongooseQuery.skip(skip).limit(limit);

@@ -28,7 +28,7 @@ const schema = new Schema(
 
 schema.post("init", (doc) => {
   doc.image
-    ? (doc.image = process.env.BASE_URL + `categories/` + doc.image)
+    ? (doc.image = `https://ecommerceroute-5kf6lvpgk-mostafamaged99s-projects.vercel.app/categories/` + doc.image)
     : "";
 });
 
