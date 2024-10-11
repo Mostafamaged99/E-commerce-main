@@ -1,6 +1,14 @@
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import { AppError } from "../utlities/appError.js";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+
+cloudinary.config({
+  cloud_name: "dvi6lv6oj",
+  api_key: "394767352469232",
+  api_secret: "Yf0VeWO-tbAJTbEln4Ywd5UGTGE",
+});
 
 const fileUpload = (folderName) => {
   const storage = multer.diskStorage({
@@ -37,3 +45,15 @@ export const uplaodMixOfFiles = (arrayOfFields, folderName) => {
   return fileUpload(folderName).fields(arrayOfFields);
 };
 
+export const uploadToCloudinary = async (filePath, folderName) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: folderName,
+    });
+    fs.unlinkSync(filePath); 
+    return result.secure_url; 
+  } catch (error) {
+    console.error("Upload to Cloudinary error:", error);
+    throw new AppError("Error uploading to Cloudinary: " + error.message, 500);
+  }
+};

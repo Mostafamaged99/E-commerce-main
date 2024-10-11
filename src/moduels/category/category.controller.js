@@ -4,17 +4,25 @@ import { messages } from "../../utlities/messages.js";
 import { catchError } from "../../middleware/catchError.js";
 import { AppError } from "../../utlities/appError.js";
 import { ApiFeatures } from "../../utlities/apifeatures.js";
+import { uploadToCloudinary } from "../../fileUpload/fileUpload.js ";
 
-const addCategory = catchError(async (req, res) => {
-  // slugify the name
+const addCategory = catchError(async (req, res, next) => {
   req.body.slug = slugify(req.body.name);
-  // get data from req.body
-  req.body.image = req.file.filename;
-  const category = new Category(req.body);
-  // save data
-  await category.save();
-  // send response
-  res.json({ message: messages.category.addedSuccessfully, data: category });
+  uploadToCloudinary(req.file.path, "categories")
+    .then((cloudinaryImageUrl) => {
+      req.body.image = cloudinaryImageUrl;
+      const category = new Category(req.body);
+      return category.save();
+    })
+    .then((category) => {
+      res.json({
+        message: messages.category.addedSuccessfully,
+        data: category,
+      });
+    })
+    .catch((err) => {
+      next(new AppError("Error while uploading image to cloudinary", 500));
+    });
 });
 
 const allCategories = catchError(async (req, res, next) => {
@@ -48,19 +56,31 @@ const getCategory = catchError(async (req, res, next) => {
 });
 
 const updateCategory = catchError(async (req, res, next) => {
-  // slugify the name
   req.body.name ? (req.body.slug = slugify(req.body.name)) : "";
-  // get data from req.body
-  if (req.file) req.body.image = req.file.filename;
-  const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  // send response
-  category || next(new AppError(messages.category.notFound, 404));
-  !category ||
-    res.json({
-      message: messages.category.updatedSuccessfully,
-      data: category,
+  const imageUpload = req.file
+    ? uploadToCloudinary(req.file.path, "categories").then(
+        (cloudinaryImageUrl) => {
+          req.body.image = cloudinaryImageUrl;
+        }
+      )
+    : Promise.resolve();
+  imageUpload
+    .then(() => {
+      return Category.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+    })
+    .then((category) => {
+      if (!category) {
+        next(new AppError(messages.category.notFound, 404));
+      }
+      res.json({
+        message: messages.category.updatedSuccessfully,
+        data: category,
+      });
+    })
+    .catch((err) => {
+      next(new AppError("Error while uploading image to cloudinary", 500));
     });
 });
 
