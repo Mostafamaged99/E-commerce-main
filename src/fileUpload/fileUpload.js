@@ -50,7 +50,7 @@ export const uploadToCloudinary = async (filePath, folderName) => {
     const result = await cloudinary.uploader.upload(filePath, {
       folder: folderName,
     });
-    fs.unlinkSync(filePath); 
+    //fs.unlinkSync(filePath); 
     return result.secure_url; 
   } catch (error) {
     console.error("Upload to Cloudinary error:", error);
