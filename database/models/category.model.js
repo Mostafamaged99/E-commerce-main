@@ -27,7 +27,9 @@ const schema = new Schema(
 );
 
 schema.post("init", (doc) => {
-  doc.image ? (doc.image = doc.image) : "";
+  if (doc.image) {
+    doc.image = `https://res.cloudinary.com/dvi6lv6oj/${doc.image}`;
+  }
 });
 
 export const Category = model("Category", schema);
